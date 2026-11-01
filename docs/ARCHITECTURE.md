@@ -30,3 +30,14 @@ La clé privée reste dans le wallet. L’interface est remplaçable ; un appel 
 | Un gros retrait exige deux personnes cryptographiques | deux adresses distinctes pour la même clé d’opération | tests multisig |
 
 Sous transactions normales : `balance(Core) == totalEscrow`. En présence d’ETH forcé : `balance(Core) >= totalEscrow`. Une égalité absolue ne peut pas être garantie contre un transfert forcé ; ces fonds ne sont pas distribués arbitrairement.
+
+## États
+- En cours : avant deadline, ni annulation ni autorisation de sortie.
+- Réussie : objectif atteint à échéance OU autorisation anticipée de la DAO.
+- Échouée : après échéance et objectif non atteint, sans autorisation anticipée.
+- Annulée : gel/annulation voté, avant retrait ; contributions remboursables.
+
+`releaseApproved` et `withdrawn` sont distincts : « Réussie » ne signifie pas « fonds déjà payés ». Un vote d’annulation exécuté avant le retrait rend l’autorisation antérieure inutilisable. Après un retrait, une annulation est impossible.
+
+## Signatures et appels
+Les transactions Ethereum portent la signature du wallet. TreasuryGuard comptabilise des transactions d’approbation provenant de trois adresses autorisées ; deux adresses distinctes sont nécessaires. Il n’y a pas de signatures hors chaîne ni de récupération `ecrecover` personnalisée. L’absence de rotation est une limite assumée.
