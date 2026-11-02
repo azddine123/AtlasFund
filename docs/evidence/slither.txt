@@ -1,0 +1,38 @@
+
+Detector: timestamp
+CrowdfundingCore.status(uint256) (contracts/CrowdfundingCore.sol#67-73) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < c.deadline (contracts/CrowdfundingCore.sol#71)
+CrowdfundingCore.authorizeRelease(uint256) (contracts/CrowdfundingCore.sol#96-101) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(! c.cancelled && ! c.withdrawn && ! c.releaseApproved && c.escrow > 0,not releasable) (contracts/CrowdfundingCore.sol#98)
+	- require(bool,string)(block.timestamp < c.deadline || c.raised >= c.goal,campaign failed) (contracts/CrowdfundingCore.sol#99)
+CrowdfundingCore.cancelByGovernance(uint256) (contracts/CrowdfundingCore.sol#103-107) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(! c.withdrawn && ! c.cancelled,cannot cancel) (contracts/CrowdfundingCore.sol#105)
+CrowdfundingCore.withdrawFunds(uint256) (contracts/CrowdfundingCore.sol#108-121) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(msg.sender == c.beneficiary,not beneficiary) (contracts/CrowdfundingCore.sol#110)
+	- require(bool,string)(c.releaseApproved && ! c.cancelled && ! c.withdrawn,not authorized) (contracts/CrowdfundingCore.sol#111)
+	- require(bool,string)(guard.isApproved(address(this),id,c.beneficiary,amount),multisig required) (contracts/CrowdfundingCore.sol#115)
+FundingDAO.vote(uint256,bool) (contracts/FundingDAO.sol#51-61) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp < p.deadline && ! p.executed,vote closed) (contracts/FundingDAO.sol#54)
+FundingDAO.execute(uint256) (contracts/FundingDAO.sol#63-72) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp >= p.executableAt && ! p.executed,not executable) (contracts/FundingDAO.sol#66)
+	- require(bool,string)(p.yes + p.no >= p.quorum && p.yes > p.no,proposal rejected) (contracts/FundingDAO.sol#67)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: low-level-calls
+Low level call in CrowdfundingCore.refund(uint256) (contracts/CrowdfundingCore.sol#82-93):
+	- (ok,None) = address(msg.sender).call{value: amount}() (contracts/CrowdfundingCore.sol#91)
+Low level call in CrowdfundingCore.withdrawFunds(uint256) (contracts/CrowdfundingCore.sol#108-121):
+	- (ok,None) = address(msg.sender).call{value: amount}() (contracts/CrowdfundingCore.sol#119)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+. analyzed (37 contracts with 102 detectors), 8 result(s) found
+'npx hardhat clean' running (wd: /workspace/scratch/4a94e635d2ea/AtlasFund)
+'npx hardhat clean --global' running (wd: /workspace/scratch/4a94e635d2ea/AtlasFund)
+Problem executing hardhat: npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+'npx hardhat compile --force' running (wd: /workspace/scratch/4a94e635d2ea/AtlasFund)
