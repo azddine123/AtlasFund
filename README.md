@@ -87,6 +87,17 @@ npm run audit
 ```
 Le fichier `slither-new.json` ne doit pas déjà exister ; renommer une précédente sortie avant de relancer. Slither retourne normalement un code non nul lorsqu’il rapporte des findings, même si l’analyse a réussi. Lire `success` dans le JSON et le détail des résultats. Les sorties de la version livrée sont annexées dans `docs/evidence/slither.json` et `slither.txt` ; périmètre : contrats applicatifs, dépendances et contrat adversarial exclus des findings affichés. Il ne s’agit pas d’un audit indépendant ni d’une garantie d’absence de vulnérabilités.
 
+## Sepolia : procédure préparée, non exécutée
+Utiliser un wallet de test neuf, quelques ETH de test et trois vrais signataires distincts. Les variables sont décrites dans `.env.example` ; les exporter dans le terminal (le projet ne charge pas automatiquement `.env`). Puis :
+```bash
+npx hardhat run scripts/deploy.js --network sepolia
+npm run build
+```
+`SEPOLIA_RPC_URL`, `DEPLOYER_PRIVATE_KEY`, `ADMIN_ADDRESS` et `GUARD_SIGNERS` sont requis. Ne jamais committer une vraie clé. Le déploiement exporte l’ABI ; les rôles Admin sont transférés à `ADMIN_ADDRESS` si elle diffère du déployeur. Pour un déploiement public, remplacer le lien local des métadonnées par une passerelle IPFS publique et assurer leur épinglage. Vérifier manuellement toutes les transactions MetaMask. L’énoncé autorise Hardhat local pour la démonstration mais mentionne des captures testnet dans le rapport : demander au professeur si les preuves locales suffisent avant la remise finale.
+
+## Limites à défendre
+Gouvernance pondérée ≠ une personne/une voix ; un contributeur majoritaire peut orienter les décisions. Les snapshots empêchent les changements de poids après création, pas toutes les attaques économiques. Les droits historiques d’un scrutin restent figés même si un remboursement ultérieur détruit les CFD. Les dons réussis conservent des CFD, ce qui élargit l’électorat au fil du temps. La perte de deux clés des signataires peut bloquer les gros retraits. Il n’existe pas de rotation des signataires ni de proxy d’upgrade dans ce prototype. Les fonds envoyés de force au contrat ne sont pas attribués à une campagne et ne sont pas récupérables par une fonction Admin. L’interface est un client non fiable : la sécurité repose sur les contrats.
+
 ## Bonus IA / blockchain
 `analyze.py` utilise des **heuristiques explicables**, pas un modèle entraîné : répétitions, pics de fréquence et montants atypiques. Les événements viennent de `Contribution` sur le contrat déployé. Les adresses liées ne sont pas inférées : sans données additionnelles, ce serait une affirmation injustifiée. Chaque alerte inclut la règle et ses éléments observables ; aucune alerte ne bloque automatiquement les fonds.
 
