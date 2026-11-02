@@ -30,3 +30,31 @@ Gros contributeur influent ; rôle Admin capable de suspendre ; perte des signat
 
 **9:30–10:00 · Conclusion factuelle**
 Rappeler la dApp fonctionnelle, les règles testées, l’analyse explicable et le périmètre local. Présenter comme étape suivante la validation manuelle MetaMask et, si demandé, le déploiement Sepolia avec épinglage public IPFS.
+
+## Questions ciblées
+
+**Pourquoi pas un ERC-20 librement transférable ?** Pour lier les voix à une contribution personnelle, permettre la destruction lors d’un remboursement et éviter le commerce temporaire de voix. L’interface ERC-20 est conservée mais l’usage DEX est volontairement restreint.
+
+**Un snapshot bloque-t-il toutes les attaques de gouvernance ?** Non. Il fige la distribution et empêche un achat après création d’augmenter ce scrutin. Il n’empêche pas un acteur riche de contribuer avant le snapshot ni les coalitions.
+
+**Le remboursement efface-t-il un vote déjà exprimé ?** Non : l’historique est figé. Il détruit les CFD actuels, donc réduit les droits pour les futurs snapshots.
+
+**Pourquoi le bloc précédent ?** Le bloc courant n’est pas encore terminé ; OpenZeppelin refuse les requêtes de votes passés sur un bloc courant/futur. Cette convention rend le calcul déterministe et exclut la frappe du même bloc.
+
+**Pourquoi 20 % ?** Compromis pédagogique entre participation minimale et disponibilité. Ce choix n’est pas universel : l’électorat et l’abstention réels doivent guider le paramétrage d’une production.
+
+**Pourquoi 1 ETH ?** Seuil démonstratif simple permettant de tester les deux branches. Il ne constitue pas une évaluation économique adaptée à la production.
+
+**La DAO envoie-t-elle l’argent ?** Elle autorise. Le bénéficiaire retire ; le contrôle multisig s’ajoute si nécessaire.
+
+**Comment une décision s’exécute-t-elle automatiquement ?** Les conditions sont vérifiées automatiquement par `execute`, mais une transaction externe reste nécessaire. Aucun smart contract ne se réveille seul.
+
+**Pourquoi les appels bas niveau signalés par Slither sont-ils conservés ?** Pour envoyer l’ETH avec gestion du retour booléen, sans dépendre du stipend de `transfer`. Les soldes sont mis à jour avant l’appel et ReentrancyGuard protège les fonctions. Les tests incluent un destinataire qui refuse l’ETH.
+
+**Qui peut améliorer le code déployé ?** Personne directement : aucun proxy. Il faut redéployer une version corrigée et organiser une migration explicite ; la pause donne du temps sans modifier l’historique.
+
+**Pourquoi pas de ML ?** Le sujet demande une heuristique simple. Nous n’avons ni jeu annoté ni protocole d’évaluation permettant de revendiquer un modèle prédictif fiable.
+
+**Quel risque reste sur IPFS ?** Le CID permet de vérifier le contenu, mais un contenu non répliqué peut devenir indisponible. Il faut un épinglage et une stratégie de sauvegarde.
+
+**Qu’a fait chaque membre et comment l’IA a-t-elle été utilisée ?** Répondre avec les contributions réelles, les validations rejouées et les règles de l’enseignant ; voir UTILISATION_IA.md.
