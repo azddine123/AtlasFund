@@ -72,3 +72,30 @@ Fermer les anciens services sur 8545, 8787 et 5173 avant ce test. Le navigateur 
 - `scripts/` : déploiement, démo, IPFS, export d’événements, analyse et validation UI.
 - `docs/` : rapport, architecture, traçabilité, audit, soutenance et preuves brutes.
 - `deployments/localhost.json` : adresses et ABI de la démonstration, à régénérer pour votre nœud.
+
+## IPFS : ce qui est livré
+Le service `ipfs-server.mjs` utilise **Helia/UnixFS**, crée de véritables CIDv1, persiste les blocs dans `.ipfs/blocks`, sauvegarde les JSON sources dans `docs/metadata`, et les restitue par CID. La démonstration fonctionne **hors réseau P2P** ; aucune disponibilité sur une passerelle publique n’est promise. La chaîne conserve uniquement le CID des métadonnées.
+
+Pour Sepolia, épingler les JSON sur un nœud IPFS public ou Pinata, puis saisir le CID obtenu dans le formulaire. Un CID assure l’adressage et l’intégrité, **pas la permanence de disponibilité**. Les secrets Pinata doivent rester hors du front-end. Le format CID est vérifié côté interface ; Core ne vérifie que sa longueur (limite documentée). Ne pas stocker de données personnelles dans les métadonnées publiques.
+
+## Audit reproductible
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-audit.txt
+npm run audit
+```
+Le fichier `slither-new.json` ne doit pas déjà exister ; renommer une précédente sortie avant de relancer. Slither retourne normalement un code non nul lorsqu’il rapporte des findings, même si l’analyse a réussi. Lire `success` dans le JSON et le détail des résultats. Les sorties de la version livrée sont annexées dans `docs/evidence/slither.json` et `slither.txt` ; périmètre : contrats applicatifs, dépendances et contrat adversarial exclus des findings affichés. Il ne s’agit pas d’un audit indépendant ni d’une garantie d’absence de vulnérabilités.
+
+## Bonus IA / blockchain
+`analyze.py` utilise des **heuristiques explicables**, pas un modèle entraîné : répétitions, pics de fréquence et montants atypiques. Les événements viennent de `Contribution` sur le contrat déployé. Les adresses liées ne sont pas inférées : sans données additionnelles, ce serait une affirmation injustifiée. Chaque alerte inclut la règle et ses éléments observables ; aucune alerte ne bloque automatiquement les fonds.
+
+## Comprendre avant de soutenir
+Lire `docs/SOUTENANCE_10_MIN.md`, exécuter les tests puis modifier vous-même un paramètre et expliquer son effet. `docs/UTILISATION_IA.md` distingue l’assistance de génération du travail de compréhension et validation attendu.
+
+## Recréer le rapport PDF
+```bash
+pip install reportlab pillow
+python3 scripts/build_report.py
+```
+Les captures de `docs/evidence` doivent être présentes. Sous Ubuntu, les polices DejaVu sont utilisées.
