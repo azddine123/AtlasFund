@@ -25,3 +25,18 @@ Un avertissement accepté n’est pas un avertissement « corrigé ». Aucun pat
 - Snapshot ERC20Votes : bloc précédent, offre et poids historiques, pas de poids lu au moment du vote.
 - CFD non transférables, délégation à soi-même et burn au remboursement.
 - Deux approbations distinctes, révocables, liées à l’opération exacte. Un retrait ne peut être rejoué.
+
+## Risques résiduels et limites fonctionnelles
+1. **Gouvernance économique** : majorité de jetons, faible participation et coalition restent possibles. Le quorum global peut rendre une petite campagne dépendante d’anciens contributeurs.
+2. **Snapshot historique** : un remboursement ne réécrit pas un scrutin déjà ouvert ; la voix historique reste valable. Pour un design à enjeu financier, un verrouillage temporaire des contributions demanderait une politique explicite compatible avec les remboursements.
+3. **Déblocage anticipé** : la DAO peut accepter un projet sous l’objectif avant échéance. C’est une règle annoncée, avec perte du droit de remboursement après autorisation ; ce n’est pas une protection financière absolue.
+4. **Pause centralisée** : l’Admin peut bloquer indéfiniment les sorties sans transférer les fonds. Une administration multisig ou une politique de délai maximal serait une extension.
+5. **Signataires fixes** : la perte de deux clés bloque les retraits > 1 ETH. Aucune rotation ni récupération n’est implémentée.
+6. **Métadonnées** : Core borne la longueur mais ne prouve pas la disponibilité ou la validité complète du CID. Le navigateur vérifie la syntaxe ; l’hébergement local n’apporte pas une réplication publique.
+7. **Ordre des décisions** : si une annulation et un retrait sont en concurrence, l’ordre d’inclusion détermine le résultat. Une annulation après paiement échoue. Le délai de gouvernance donne du temps, mais ne supprime pas le risque d’ordonnancement.
+8. **Propositions périmées** : plusieurs propositions peuvent viser une campagne. Une exécution devenue incompatible avec l’état échoue et ne déplace aucun fonds ; les propositions inutiles restent dans l’historique. Un seuil minimal de 1 CFD limite seulement les proposants sans participation.
+9. **Prototype sans proxy** : une correction implique un nouveau déploiement. Les paramètres retenus sont pédagogiques et ne suffisent pas pour une mise en production.
+10. **Transferts forcés** : du solde ETH peut arriver sans contribution. Il n’augmente pas `totalEscrow` et ne donne aucun CFD ; aucune fonction de récupération n’est livrée.
+
+## Vérification manuelle à refaire par l’équipe
+Exécuter sur une instance fraîche : contribution, vote avec Alice et Bob, tentative de vote avec un compte sans CFD au snapshot, refus de retrait sans multisig, deux approbations puis retrait, pause/reprise, annulation et remboursement. Capturer les confirmations MetaMask. Décrire fidèlement les résultats observés, sans reprendre une preuve locale comme preuve Sepolia.
