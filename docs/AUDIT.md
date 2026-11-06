@@ -40,3 +40,19 @@ Un avertissement accepté n’est pas un avertissement « corrigé ». Aucun pat
 
 ## Vérification manuelle à refaire par l’équipe
 Exécuter sur une instance fraîche : contribution, vote avec Alice et Bob, tentative de vote avec un compte sans CFD au snapshot, refus de retrait sans multisig, deux approbations puis retrait, pause/reprise, annulation et remboursement. Capturer les confirmations MetaMask. Décrire fidèlement les résultats observés, sans reprendre une preuve locale comme preuve Sepolia.
+
+## Rejeu de l'audit (Windows) et justification finding par finding
+Slither 0.11.6 a été relancé sur la version actuelle (Windows 11, Node 24, Python 3.11) : **37 contrats, 102 détecteurs, 8 findings**, identiques à l'exécution livrée (sorties : `docs/evidence/slither-rerun.json` et `slither-rerun.txt`). Aucun finding moyen ou élevé.
+
+| # | Détecteur | Emplacement | Pourquoi c'est acceptable |
+|---|---|---|---|
+| 1 | timestamp (faible) | `CrowdfundingCore.status` (l.67-73) | La date limite d'une campagne est comparée à `block.timestamp`. Les durées sont d'au moins 1 h : une dérive de quelques secondes d'un validateur ne change pas le résultat. Aucun aléa n'en dépend. |
+| 2 | timestamp | `CrowdfundingCore.authorizeRelease` (l.96-101) | Même raisonnement (comparaison à la date limite). |
+| 3 | timestamp | `CrowdfundingCore.cancelByGovernance` (l.103-107) | Le détecteur signale l'usage indirect via les conditions ; pas de logique sensible au temps à la seconde. |
+| 4 | timestamp | `CrowdfundingCore.withdrawFunds` (l.108-121) | Idem : le temps n'intervient que via `releaseApproved`, déjà fixé par la DAO. |
+| 5 | timestamp | `FundingDAO.vote` (l.51-61) | Fin de scrutin à 1 h minimum ; la précision à la seconde n'est pas requise. |
+| 6 | timestamp | `FundingDAO.execute` (l.63-72) | Délai de sécurité de 10 min minimum, sans enjeu à la seconde près. |
+| 7 | low-level-calls (info) | `CrowdfundingCore.refund` (l.91) | `call{value:}` est la méthode recommandée pour envoyer de l'ETH (`transfer` limite le gas à 2300 et peut casser avec des contrats). Mitigations : retour booléen vérifié, état mis à jour avant l'appel (CEI), `nonReentrant`, deux tests d'attaque. |
+| 8 | low-level-calls (info) | `CrowdfundingCore.withdrawFunds` (l.119) | Même justification que le n° 7. |
+
+**Honnêteté sur les « corrections »** : aucun de ces 8 avertissements n'est une vulnérabilité ; les protections ont été conçues avant l'audit. Un test de mutation complémentaire (suppression de `token.burn` dans `refund`) fait échouer la suite : cela montre que les tests détectent bien une régression de ce type.

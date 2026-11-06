@@ -177,4 +177,37 @@ describe('AtlasFund — exigences fonctionnelles et adversariales',function(){
   for(const id of ids)for(const u of users){const amount=await core.contributions(id,u.address);if(amount>0n)await core.connect(u).refund(id);}
   expect(await core.totalEscrow()).to.equal(0);expect(await token.totalSupply()).to.equal(0);expect(await ethers.provider.getBalance(core.target)).to.equal(0);
  });
+
+ // Fuzzing par séquences : 8 graines, opérations aléatoires (contribution, temps, remboursement, vote, retrait),
+ // invariants de conservation vérifiés après CHAQUE opération. Reproductible : relancer avec la même graine.
+ for(const seed of [1,7,42,1337,2024,31337,0xBEEF,0xC0FFEE]){
+  it(`Fuzzing par séquences aléatoires (graine ${seed}) : invariants de conservation après chaque opération`,async()=>{
+   let s=seed>>>0;const rand=()=>{s=(s+0x6D2B79F5)>>>0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};
+   const pick=a=>a[Math.floor(rand()*a.length)];
+   const ids=[];for(let i=0;i<3;i++)ids.push(await create(String(1+Math.floor(rand()*3)),3600+Math.floor(rand()*7200)));
+   const users=[alice,bob,outsider];let ops=0,reverted=0;
+   const check=async()=>{
+    let escrowSum=0n,contribSum=0n;
+    for(const id of ids){
+     const c=await core.campaigns(id);let sum=0n;
+     for(const u of users)sum+=await core.contributions(id,u.address);
+     contribSum+=sum;escrowSum+=c.escrow;
+     if(!c.withdrawn)expect(c.escrow,'escrow = somme des contributions non remboursées').to.equal(sum);else expect(c.escrow).to.equal(0n);
+    }
+    expect(await core.totalEscrow()).to.equal(escrowSum);
+    expect(await ethers.provider.getBalance(core.target),'solde ETH = séquestre').to.equal(escrowSum);
+    expect(await token.totalSupply(),'offre CFD = 1000 x contributions').to.equal(contribSum*1000n);
+   };
+   const attempt=async f=>{try{await f();ops++;}catch(e){reverted++;}await check();};
+   for(let step=0;step<40;step++){
+    const r=rand(),id=pick(ids),u=pick(users);
+    if(r<0.45)await attempt(()=>core.connect(u).contribute(id,{value:BigInt(1+Math.floor(rand()*50000))*10n**9n}));
+    else if(r<0.60)await attempt(()=>core.connect(u).refund(id));
+    else if(r<0.72)await attempt(()=>advance(300+Math.floor(rand()*4000)));
+    else if(r<0.88)await attempt(async()=>{const p=await dao.proposalCount();await dao.connect(alice).propose(id,rand()<0.7?0:1);await dao.connect(alice).vote(p,true);if(rand()<0.7)await dao.connect(bob).vote(p,rand()<0.8);await advance(4201);await dao.execute(p);});
+    else await attempt(()=>core.connect(beneficiary).withdrawFunds(id));
+   }
+   console.log(`       graine ${seed} : ${ops} opérations réussies, ${reverted} refusées (attendu)`);expect(ops,"la séquence doit exécuter des opérations réelles").to.be.greaterThan(5);
+  });
+ }
 });

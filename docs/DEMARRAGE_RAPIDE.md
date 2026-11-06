@@ -3,7 +3,7 @@
 1. Lire le rapport de 12 pages pour comprendre l’ensemble.
 2. Suivre le README pour installer et lancer les quatre terminaux.
 3. Lire les règles de déblocage anticipé et de remboursement avant les essais.
-4. Rejouer les 26 tests Hardhat et les 5 tests Python.
+4. Rejouer les 34 tests Hardhat et les 5 tests Python.
 5. Tester la connexion MetaMask avec un compte Hardhat de démonstration.
 6. Utiliser SOUTENANCE_10_MIN.md pour expliquer et défendre les choix.
 

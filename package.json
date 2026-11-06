@@ -10,10 +10,10 @@
     "demo": "hardhat run scripts/demo.js --network localhost",
     "frontend": "vite frontend --host 127.0.0.1",
     "build": "vite build frontend",
-    "audit": "python3 -m slither . --filter-paths 'node_modules|contracts/test' --json docs/evidence/slither-new.json",
+    "audit": "node scripts/py.cjs -m slither . --filter-paths \"node_modules|contracts/test\" --json docs/evidence/slither-new.json",
     "ipfs": "node scripts/ipfs-server.mjs",
-    "analyze": "hardhat run scripts/export-events.js --network localhost && python3 scripts/analyze.py docs/evidence/contributions.json",
-    "test:python": "python3 -m unittest discover -s test -p 'test_*.py'"
+    "analyze": "hardhat run scripts/export-events.js --network localhost && node scripts/py.cjs scripts/analyze.py docs/evidence/contributions.json",
+    "test:python": "node scripts/py.cjs -m unittest discover -s test -p test_*.py"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "2.1.2",

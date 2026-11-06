@@ -1,39 +1,53 @@
-npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 
 > atlasfund@1.0.0 test
 > hardhat test
 
-Compiled 35 Solidity files successfully (evm target: paris).
 
 
   AtlasFund — exigences fonctionnelles et adversariales
-    ✔ M1 : frappe proportionnelle, auto-délégation, aucune frappe publique (111ms)
-    ✔ CFD personnel : transferts et délégation à un tiers refusés (67ms)
-    ✔ M2 : objectif, durée, bénéficiaire et CID contrôlés (176ms)
+    ✔ M1 : frappe proportionnelle, auto-délégation, aucune frappe publique
+    ✔ CFD personnel : transferts et délégation à un tiers refusés
+    ✔ M2 : objectif, durée, bénéficiaire et CID contrôlés
     ✔ M2 : contribution nulle ou campagne inexistante refusée
     ✔ M2 : transition En cours -> Réussie à échéance, retrait encore bloqué
-    ✔ M2 : Échouée -> remboursement exact + destruction CFD + pas de double remboursement (66ms)
-    ✔ Refus d’ETH : rollback intégral puis remboursement possible (99ms)
-    ✔ Attaque réelle de réentrance sur refund : tentative observée et rejetée (65ms)
-    ✔ M3 : déblocage anticipé sous objectif, clôture des contributions et retrait (161ms)
-    ✔ Attaque réelle de réentrance sur withdraw : échec et autres campagnes intactes (99ms)
-    ✔ M3 : gel = Annulée, restitution ouverte, retrait impossible (132ms)
-    ✔ Une campagne échouée ne peut être sauvée rétroactivement par un vote (100ms)
-    ✔ Contrôle d’accès : Admin ne peut ni forcer la DAO ni retirer les fonds (110ms)
-    ✔ Circuit breaker : création/contribution/retrait/remboursement suspendus, reprise (70ms)
+    ✔ M2 : Échouée -> remboursement exact + destruction CFD + pas de double remboursement
+    ✔ Refus d’ETH : rollback intégral puis remboursement possible
+    ✔ Attaque réelle de réentrance sur refund : tentative observée et rejetée
+    ✔ M3 : déblocage anticipé sous objectif, clôture des contributions et retrait
+    ✔ Attaque réelle de réentrance sur withdraw : échec et autres campagnes intactes
+    ✔ M3 : gel = Annulée, restitution ouverte, retrait impossible
+    ✔ Une campagne échouée ne peut être sauvée rétroactivement par un vote
+    ✔ Contrôle d’accès : Admin ne peut ni forcer la DAO ni retirer les fonds
+    ✔ Circuit breaker : création/contribution/retrait/remboursement suspendus, reprise
     ✔ La DAO peut geler pendant une pause ; remboursements après reprise
-    ✔ Snapshot : acquisition APRÈS proposition = aucun nouveau vote (111ms)
-    ✔ Snapshot même bloc : la frappe ne permet pas de proposer immédiatement (81ms)
-    ✔ Vote unique, délai de scrutin et délai d’exécution effectifs (64ms)
-    ✔ Quorum non atteint malgré 100 % de oui parmi les votants : rejet (59ms)
-    ✔ Égalité oui/non : rejet (205ms)
-    ✔ Multisig > 1 ETH : deux signataires distincts, autorisation liée au montant (235ms)
-    ✔ Multisig : révocation, non-signataire, signataires dupliqués refusés (78ms)
-    ✔ Seuil exact de 1 ETH : DAO obligatoire, multisig non exigée (151ms)
-    ✔ Gel prioritaire sur autorisation non retirée, puis remboursement (140ms)
-    ✔ Snapshot après destruction : pouvoir ancien conservé, nouvelles propositions sans votes (49ms)
-    ✔ Fuzzing déterministe : 64 montants, 4 campagnes, conservation ETH et CFD (seed 0xC0FFEE) (2806ms)
+    ✔ Snapshot : acquisition APRÈS proposition = aucun nouveau vote
+    ✔ Snapshot même bloc : la frappe ne permet pas de proposer immédiatement
+    ✔ Vote unique, délai de scrutin et délai d’exécution effectifs
+    ✔ Quorum non atteint malgré 100 % de oui parmi les votants : rejet
+    ✔ Égalité oui/non : rejet
+    ✔ Multisig > 1 ETH : deux signataires distincts, autorisation liée au montant
+    ✔ Multisig : révocation, non-signataire, signataires dupliqués refusés
+    ✔ Seuil exact de 1 ETH : DAO obligatoire, multisig non exigée
+    ✔ Gel prioritaire sur autorisation non retirée, puis remboursement
+    ✔ Snapshot après destruction : pouvoir ancien conservé, nouvelles propositions sans votes
+    ✔ Fuzzing déterministe : 64 montants, 4 campagnes, conservation ETH et CFD (seed 0xC0FFEE) (191ms)
+       graine 1 : 10 opérations réussies, 30 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 1) : invariants de conservation après chaque opération (352ms)
+       graine 7 : 17 opérations réussies, 23 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 7) : invariants de conservation après chaque opération (342ms)
+       graine 42 : 22 opérations réussies, 18 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 42) : invariants de conservation après chaque opération (336ms)
+       graine 1337 : 18 opérations réussies, 22 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 1337) : invariants de conservation après chaque opération (339ms)
+       graine 2024 : 27 opérations réussies, 13 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 2024) : invariants de conservation après chaque opération (350ms)
+       graine 31337 : 13 opérations réussies, 27 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 31337) : invariants de conservation après chaque opération (377ms)
+       graine 48879 : 14 opérations réussies, 26 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 48879) : invariants de conservation après chaque opération (469ms)
+       graine 12648430 : 23 opérations réussies, 17 refusées (attendu)
+    ✔ Fuzzing par séquences aléatoires (graine 12648430) : invariants de conservation après chaque opération (342ms)
 
 
-  26 passing (13s)
+  34 passing (5s)
 

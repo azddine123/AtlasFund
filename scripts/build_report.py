@@ -13,9 +13,14 @@ from reportlab.graphics.shapes import Drawing,Rect,String,Line,Polygon,Circle
 from PIL import Image as PILImage
 root=Path(__file__).resolve().parents[1]
 out=root/'docs/Rapport_AtlasFund.pdf';ev=root/'docs/evidence'
-pdfmetrics.registerFont(TTFont('DejaVu','/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
-pdfmetrics.registerFont(TTFont('DejaVu-Bold','/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'))
-pdfmetrics.registerFont(TTFont('DejaVuMono','/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf'))
+def _font(*paths):
+ import os
+ for x in paths:
+  if os.path.exists(x):return x
+ raise FileNotFoundError('Police introuvable : '+paths[0])
+pdfmetrics.registerFont(TTFont('DejaVu',_font('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf','C:/Windows/Fonts/arial.ttf')))
+pdfmetrics.registerFont(TTFont('DejaVu-Bold',_font('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf','C:/Windows/Fonts/arialbd.ttf')))
+pdfmetrics.registerFont(TTFont('DejaVuMono',_font('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf','C:/Windows/Fonts/consola.ttf')))
 pdfmetrics.registerFontFamily('DejaVu',normal='DejaVu',bold='DejaVu-Bold')
 INK=colors.HexColor('#153B32');GREEN=colors.HexColor('#237957');MUTED=colors.HexColor('#657C70');PALE=colors.HexColor('#EAF1E7');LINE=colors.HexColor('#DAE5D9');WHITE=colors.white
 styles={
@@ -73,9 +78,9 @@ add('Des idées financées.<br/>Des décisions vérifiables.','h1');story.append
 add('Plateforme de financement participatif décentralisée<br/>à gouvernance par jeton CFD','h2')
 add('Rapport de conception, réalisation et validation<br/>Module Blockchain · Pr. Hamza Touil')
 story.append(Spacer(1,25))
-table([['4 contrats','26 tests Hardhat','2 protections de sortie'],['Architecture séparée et traçable','Inclut réentrance et fuzzing','Gouvernance + multisignature']],[166,166,167])
+table([['4 contrats','34 tests Hardhat','2 protections de sortie'],['Architecture séparée et traçable','Réentrance, snapshot, multisig, fuzzing','Gouvernance + multisignature']],[166,166,167])
 box('<b>La touche personnelle</b><br/>Une plateforme de projets étudiants où chaque campagne relie contributions, votes, autorisations de paiement et signaux d’activité hors chaîne. Les contrôles sont expliqués et démontrés, pas seulement affichés.')
-add('<b>Auteur :</b> Azddine El Hamdaoui<br/><b>Équipe :</b> compléter avec les coéquipiers réels avant remise.<br/><b>Version :</b> 1.0 · Démonstration Hardhat local · Solidity 0.8.28')
+add('<b>Binôme :</b> Azddine El Hamdaoui · Anas Kerfal<br/><b>Version :</b> 1.0 · Démonstration Hardhat local · Solidity 0.8.28')
 add('Statut : prototype pédagogique validé dans l’environnement décrit. Aucun déploiement Sepolia ni audit indépendant n’est revendiqué. L’usage de l’assistance IA et les validations à rejouer par l’équipe sont explicités dans les sources.','small')
 page()
 # 2
@@ -127,13 +132,14 @@ add('L’Admin ne peut pas voler les fonds mais peut prolonger une pause. La per
 page()
 # 7
 title(7,'Tests exécutés : des scénarios qui peuvent échouer')
-table([['Validation','Résultat observé','Preuve livrée'],['Compilation Solidity','35 fichiers compilés lors du test initial','evidence/tests.txt'],['Tests Hardhat','26 réussites, 0 échec','test/AtlasFund.test.js'],['Fuzzing reproductible','64 contributions, 4 campagnes, 3 contributeurs','Dernier test ; seed 0xC0FFEE'],['Tests Python','5 tests réussis','evidence/python-tests.txt'],['Interface et transaction','Lecture, filtres, formulaires, mobile et contribution EIP-1193','evidence/ui-tests.txt']],[133,205,161])
+table([['Validation','Résultat observé','Preuve livrée'],['Compilation Solidity','35 fichiers compilés lors du test initial','evidence/tests.txt'],['Tests Hardhat','34 réussites, 0 échec','test/AtlasFund.test.js'],['Fuzzing reproductible','1 test de 64 contributions + 8 séquences aléatoires (graines fixes)','Derniers tests ; invariants vérifiés après chaque opération'],['Tests Python','5 tests réussis','evidence/python-tests.txt'],['Interface et transaction','Lecture, filtres, formulaires, mobile et contribution EIP-1193','evidence/ui-tests.txt']],[133,205,161])
 h('Scénarios adversariaux significatifs')
 add('<b>Réentrance :</b> un contrat reçoit l’ETH puis rappelle refund ou withdrawFunds. Le test vérifie que la tentative a eu lieu, que le rappel a échoué et que le montant reçu n’a pas été multiplié. Il vérifie aussi que le séquestre d’autres contributeurs subsiste.')
 add('<b>Snapshot même bloc :</b> autominage désactivé, contribution et proposition envoyées dans le même bloc. La proposition ne bénéficie pas des CFD tout juste frappés. L’autominage est restauré même si le test échoue.')
 add('<b>Multisig :</b> tests de doublon, non-signataire, révocation, montant erroné, seuil exact de 1 ETH et retrait supérieur au seuil. Une autorisation ne vaut pas pour un montant voisin.')
 h('Propriétés vérifiées par le fuzzing')
 add('Un générateur pseudo-aléatoire à seed fixe varie les montants et répartit 64 contributions sur quatre campagnes. Après chaque contribution : solde ETH = totalEscrow et offre CFD = 1 000 × apports cumulés. Après l’échec et tous les remboursements : séquestre, solde et offre reviennent à zéro.')
+add('<b>Séquences aléatoires :</b> huit graines fixes génèrent chacune 40 opérations tirées au hasard (contribution, remboursement, avance du temps, proposition + votes + exécution, retrait). Après chaque opération, le test recalcule : solde ETH = séquestre = somme des contributions non remboursées, et offre CFD = 1 000 × contributions. Un test de mutation (suppression du burn dans refund) a bien fait échouer ces tests.')
 box('<b>Portée :</b> il s’agit d’un fuzzing déterministe de scénario, pas d’une preuve formelle ni d’une exploration exhaustive. Le test UI utilise un fournisseur EIP-1193 injecté vers Hardhat ; la véritable extension MetaMask doit encore être vérifiée manuellement par l’équipe.')
 page()
 # 8
@@ -188,7 +194,7 @@ page()
 title(12,'Bilan, limites et références')
 add('AtlasFund réalise les quatre modules et les contrôles de sécurité du sujet dans une démonstration locale. Sa contribution distinctive est de rendre les règles et leurs preuves accessibles : séquestre, snapshot, multisig, restitutions et analyse explicable partagent la même interface.')
 h('Ce qui reste à faire par l’équipe avant remise')
-add('Rejouer l’installation et les tests sur Ubuntu ; connecter une véritable extension MetaMask ; compléter les coéquipiers et leurs contributions ; confirmer avec l’enseignant l’acceptation des captures Hardhat ; déployer sur Sepolia et épingler publiquement les métadonnées si demandé. Les sources fournissent le chemin, mais ne remplacent pas ces validations personnelles.')
+add('Rejouer l’installation et les tests sur Ubuntu (les 34 tests Hardhat et les 5 tests Python ont aussi été rejoués avec succès sous Windows, Node 24) ; connecter une véritable extension MetaMask ; confirmer avec l’enseignant l’acceptation des captures Hardhat ; déployer sur Sepolia et épingler publiquement les métadonnées si demandé. Les sources fournissent le chemin, mais ne remplacent pas ces validations personnelles.')
 h('Limites assumées')
 add('Aucun audit indépendant, aucune garantie de perfection, aucune rotation des signataires, aucun proxy, aucune protection contre toutes les coalitions économiques. Les CFD des projets réussis restent dans l’offre et peuvent diluer la participation future. Le périmètre est pédagogique ; une mise en production demanderait une revue économique, opérationnelle et de sécurité supplémentaire.')
 h('Références du module')
@@ -196,8 +202,8 @@ add('Pr. Hamza Touil, supports fournis : chapitre I « Concepts de base et fonct
 h('Documentation technique utilisée')
 add('OpenZeppelin Contracts 5.x : <link href="https://docs.openzeppelin.com/contracts/5.x/api/token/erc20" color="#237957">ERC20 et ERC20Votes</link> ; <link href="https://docs.openzeppelin.com/contracts/5.x/governance" color="#237957">gouvernance et snapshots</link>.<br/>Hardhat : <link href="https://v2.hardhat.org/docs" color="#237957">documentation version 2</link>.<br/>Slither : <link href="https://github.com/crytic/slither" color="#237957">dépôt officiel et documentation des détecteurs</link>.<br/>IPFS : <link href="https://docs.ipfs.tech/concepts/content-addressing/" color="#237957">content addressing et CID</link>.<br/>Helia : implémentation UnixFS utilisée et versions verrouillées dans package-lock.json.','small')
 box('<b>Transparence sur l’assistance IA</b><br/>L’IA a assisté conception, code, tests et rédaction. L’équipe doit comprendre chaque décision, rejouer les preuves et respecter les règles de déclaration de l’enseignant. Le document UTILISATION_IA.md précise ce périmètre sans attribuer de travaux fictifs aux étudiants.')
-add('Annexes dans le dépôt : code source, 26 tests Hardhat, 5 tests Python, rapport Slither brut, journaux de déploiement, événements JSON, métadonnées, captures, matrice de conformité et guide de soutenance de 10 minutes.','small')
+add('Annexes dans le dépôt : code source, 34 tests Hardhat, 5 tests Python, rapport Slither brut, journaux de déploiement, événements JSON, métadonnées, captures, matrice de conformité et guide de soutenance de 10 minutes.','small')
 
-doc=SimpleDocTemplate(str(out),pagesize=(595.28,841.89),leftMargin=48,rightMargin=48,topMargin=45,bottomMargin=59,title='AtlasFund — Rapport de réalisation et validation',author='Azddine El Hamdaoui')
+doc=SimpleDocTemplate(str(out),pagesize=(595.28,841.89),leftMargin=48,rightMargin=48,topMargin=45,bottomMargin=59,title='AtlasFund — Rapport de réalisation et validation',author='Azddine El Hamdaoui, Anas Kerfal')
 doc.build(story,onFirstPage=footer,onLaterPages=footer)
 print(out)

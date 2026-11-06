@@ -17,11 +17,11 @@
 | 2-sur-3 au-delà d’un seuil | TreasuryGuard > 1 ETH | un retrait de 1,8 ETH démontré |
 | Snapshot | dernier bloc terminé à la création | tests solde accru après proposition et même bloc |
 | Audit | Slither exécuté, périmètre et findings annexés | 8 findings faible/information, aucun moyen/élevé |
-| Fuzzing | 64 contributions pseudo-aléatoires, seed fixe, 4 campagnes | 26e test : conservation fonds/CFD, restitution finale |
+| Fuzzing | 64 contributions pseudo-aléatoires (seed fixe) + **8 séquences aléatoires** (graines 1 à 0xC0FFEE) mêlant contributions, temps, remboursements, votes, exécutions et retraits | 34 tests au total ; invariants de conservation vérifiés après **chaque** opération ; test de mutation : suppression du burn dans refund → échecs détectés |
 | Bonus Python | répétition, pic, montant atypique | tests Python + historique réel |
 | Rapport 10–15 pages | Rapport_AtlasFund.pdf | rapport de 12 pages avec captures locales |
 | Oral 10 minutes | SOUTENANCE_10_MIN.md | déroulé et questions/réponses |
-| Binôme/trinôme | auteur renseigné, coéquipiers non inventés | À compléter avec les participants réels |
+| Binôme/trinôme | Azddine El Hamdaoui et Anas Kerfal (README, interface, rapport) | Répartition des tâches à confirmer par les deux membres |
 | Captures testnet (livrables) | captures Hardhat local | Discordance avec option locale de la section technique à clarifier avant remise |
 
 ## Touche personnelle directement liée au cours

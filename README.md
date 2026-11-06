@@ -1,7 +1,7 @@
 # AtlasFund — financement étudiant à gouvernance CFD
 
 Projet du module Blockchain — ENSA Béni Mellal, IA & Cybersécurité.
-Auteur : **Azddine El Hamdaoui**.
+Binôme : **Azddine El Hamdaoui** et **Anas Kerfal**.
 
 Une dApp pédagogique avec quatre contrats Solidity, des fonds séquestrés, des votes sur snapshot et un accord 2-sur-3 pour les retraits supérieurs à 1 ETH. **Démonstration sur Hardhat local ; aucun déploiement Sepolia n’est revendiqué.**
 
@@ -51,6 +51,12 @@ Redémarrer Hardhat efface l’état local. Réexécuter `deploy:local`, `demo`,
 python3 scripts/validate-local.py
 ```
 Fermer les anciens services sur 8545, 8787 et 5173 avant ce test. Le navigateur de test Linux est fourni par @sparticuz/chromium, verrouillé avec Playwright dans les dépendances de développement. Ce script lance un réseau temporaire, déploie, joue la démonstration, capture l’interface, teste une transaction via un fournisseur EIP-1193 injecté puis arrête les services. Il ne pilote pas une véritable extension MetaMask. Une validation manuelle MetaMask reste requise sur votre ordinateur.
+
+## Windows, macOS, Linux
+Les commandes Python de `package.json` passent par `scripts/py.cjs`, qui choisit `python3`, `python` ou `py` selon le système. Les 34 tests Hardhat et les 5 tests Python ont été rejoués avec succès sous Windows 11 (Node 24, Python 3.11). Le script `scripts/build_report.py` utilise les polices DejaVu sous Linux ou Arial/Consolas sous Windows.
+
+## Guides pour finaliser le projet
+`docs/GUIDE_METAMASK_ET_SEPOLIA.md` : test manuel avec la vraie extension MetaMask, déploiement Sepolia et message à envoyer au professeur si Sepolia n'est pas réalisé.
 
 ## Règles explicites
 - 1 ETH = 1 000 CFD, avec 18 décimales. Seul Core frappe/brûle les jetons.
